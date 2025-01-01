@@ -287,8 +287,9 @@ def main():
     coin = ['ada'.upper()]
     bot = datacollector(coin)
     data = bot.getPriceData()
-    intervals = bot.getIntervals()
-    bot2 = nerd(data, intervals)
+    print(data)
+#    intervals = bot.getIntervals()
+#   bot2 = nerd(data, intervals)
     
 if __name__ == '__main__':
     main()
