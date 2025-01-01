@@ -51,17 +51,17 @@ class Training_data_collector:
             if i == 1 and 3 in self.intervals:   
                 priceList = self.__get_price_list(*args)
                 templist = priceList.copy()
-                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'closes' ])
+                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'high', 'low', 'closes' ])
             elif i == 3 and 1 in self.intervals:                    
                 priceList = self.__three_minute_list(templist)
-                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'closes' ])
+                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'high', 'low', 'closes' ])
             elif i == 3 and i not in self.intervals:
                 priceList = self.__get_price_list(1, coin)
                 priceList = self.__three_minute_list(priceList)
-                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'closes' ])
+                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'high', 'low', 'closes' ])
             else:
                 priceList = self.__get_price_list(*args)
-                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'closes' ])
+                temp_dict['{} minute interval'.format(i)] = pandas.DataFrame(priceList, columns=['time', 'opens', 'high', 'low', 'closes' ])
         self.__prices[coin] = temp_dict
                 
                     
@@ -77,7 +77,7 @@ class Training_data_collector:
             key = key[0]
             coinData = results[key]                     
             for i in coinData:
-                entry = [i[0], i[1], i[4]]
+                entry = [i[0], i[1], i[2], i[3], i[4]]
                 priceList.append(entry)
         except Exception:
             print(prices['error'])
@@ -92,7 +92,9 @@ class Training_data_collector:
         for i in range(len(one_minute_list)//3):
             y = i*3
             z = y + 2
-            entry = [one_minute_list[y][0], one_minute_list[y][1], one_minute_list[z][2]]
+            high = max(float(one_minute_list[y][2]), float(one_minute_list[y+1][2]), float(one_minute_list[y+2][2]))
+            low = min(float(one_minute_list[y][3]), float(one_minute_list[y+1][3]), float(one_minute_list[y+2][3]))
+            entry = [one_minute_list[y][0], one_minute_list[y][1], high, low, one_minute_list[z][2]]
             three_min_list.append(entry)
         return three_min_list
         
