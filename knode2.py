@@ -15,7 +15,7 @@ from simulator import tradesimulator
 class datacollector:
 
     def __init__(self):
-        
+        # Predefined currency pairs. sets up needed variables and structures. Checks the status of the exchange and API
         self.currency_pairs = {'EURUSD', 'GBPUSD', 'USDJPY', 'AUDJPY', 'EURGBP', 'EURJPY', 'AUDUSD', 'EURAUD', 'GBPJPY',
                                'XBTAUD', 'XBTGBP', 'XBTJPY', 'XBTUSD', 'XBTEUR', 'ETHXBT', 'ETHEUR', 'ETHAUD', 'ETHGBP',
                                'ETHJPY', 'ETHUSD'}
@@ -31,6 +31,7 @@ class datacollector:
 
 
     def __converterget(self):
+        # Gets the conversion rates for the currency pairs
         time = requests.get('https://api.kraken.com/0/public/Time')
         time = time.json()
         time = time['result']
@@ -52,6 +53,7 @@ class datacollector:
 
 
     def coindatagrab(self, coin):
+        # Gets the asking price, best offer price and fee for the coin
         price = requests.get('https://api.kraken.com/0/public/Ticker?pair={}'.format(coin))
         price = price.json()
         price = price['result']
@@ -62,6 +64,7 @@ class datacollector:
         return {coin: [asking, bestoffer, fee]}
 
     def __healthcheck(self):
+        # Checks the status of the exchange
         health  = requests.get('https://api.kraken.com/0/public/SystemStatus')
         health = health.json()
         try:
@@ -75,6 +78,7 @@ class datacollector:
 
     
     def __coinsinfo(self):
+        # Gets the fees for the coins
         coinfees = {}
         coins = requests.get('https://api.kraken.com/0/public/AssetPairs?fees&altname')
         coins = coins.json()
@@ -96,6 +100,7 @@ class datacollector:
 
 
     def reset(self):
+        # Resets the datacollector
         self.coinKeys = {}
         self.conversions = {}               #currency pairs are stored here
         self.coinstomake = []                    #prices here
@@ -151,4 +156,6 @@ def main():
         brain.tradecheck()
         brain.reset()
         worker.reset()
-main()
+
+if __name__ == '__main__':
+    main()

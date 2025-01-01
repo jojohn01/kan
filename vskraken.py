@@ -12,12 +12,12 @@ import bisect
  #get link market data
 class datacollector:
         
-    def __init__(self, target):
-            
+    def __init__(self, target, intervals = [1, 3, 5, 15, 30]):
+        #Creates a series of dataframes for each interval of time for the target coin 
         if type(target) != list:
             target = [target]                
         self.status = self.__healthcheck()
-        self.intervals = [1, 3, 5, 15, 30]            
+        self.intervals = intervals        
         self.coins = target
         self.__prices = {}
         if self.status == 'online':
@@ -27,6 +27,7 @@ class datacollector:
                 
             
     def __healthcheck(self):
+        #Checks the status of the Kraken API. Should return 'online' if the API is up and running
         health  = requests.get('https://api.kraken.com/0/public/SystemStatus')
         health = health.json()
         try:
@@ -37,7 +38,9 @@ class datacollector:
         except:
             print('error')
             print(health)
+    
     def __getprices(self):
+        #Creates a dictionary of dataframes for each interval of time for the target
         templist = []
         for i in self.intervals:
             if i == 1 and 3 in self.intervals:   
@@ -57,6 +60,7 @@ class datacollector:
                 
                     
     def __get_price_list(self, interval):
+        #Gets the price data for the target coin at the specified interval
         priceList = []
         try:
             url = 'https://api.kraken.com/0/public/OHLC?pair={}USD&interval={}'.format((self.coins[0]), interval)
@@ -77,6 +81,7 @@ class datacollector:
             
             
     def __three_minute_list(self, one_minute_list):
+        #Converts a one minute list to a three minute list
         three_min_list = []
         for i in range(len(one_minute_list)//3):
             y = i*3
@@ -97,7 +102,7 @@ class datacollector:
                 
 
 class nerd:
-    
+    #This class is for the analysis of the data collected by the datacollector class. Ignore for now
     def __init__(self, datadict, intervals):
             
         self.intervals = intervals
@@ -279,17 +284,14 @@ class nerd:
         return
 
 def main():
-           
-            
-    
-    
     coin = ['ada'.upper()]
     bot = datacollector(coin)
     data = bot.getPriceData()
     intervals = bot.getIntervals()
     bot2 = nerd(data, intervals)
     
-main()
+if __name__ == '__main__':
+    main()
 
 
 #test zone
