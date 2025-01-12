@@ -14,23 +14,27 @@ from simulator import tradesimulator
 # Get and process data
 class datacollector:
 
-    def __init__(self):
-        # Predefined currency pairs. sets up needed variables and structures. Checks the status of the exchange and API
-        self.currency_pairs = {'EURUSD', 'GBPUSD', 'USDJPY', 'AUDJPY', 'EURGBP', 'EURJPY', 'AUDUSD', 'EURAUD', 'GBPJPY',
+    currency_pairs = {'EURUSD', 'GBPUSD', 'USDJPY', 'AUDJPY', 'EURGBP', 'EURJPY', 'AUDUSD', 'EURAUD', 'GBPJPY',
                                'XBTAUD', 'XBTGBP', 'XBTJPY', 'XBTUSD', 'XBTEUR', 'ETHXBT', 'ETHEUR', 'ETHAUD', 'ETHGBP',
                                'ETHJPY', 'ETHUSD'}
+    currencies = {'XBT', 'ETH', 'USD','EUR','GBP','AUD', 'JPY'}
+
+    def __init__(self):
+        # Predefined currency pairs. sets up needed variables and structures. Checks the status of the exchange and API
+        self.currency_pairs = currency
+        self.currencies = currencies
         self.currencies = {'XBT', 'ETH', 'USD','EUR','GBP','AUD', 'JPY'}
         self.coinKeys = {}
         self.conversions = {}               #currency pairs are stored here
         self.coinstomake = []                    #prices here
-        self.status = self.__healthcheck()
+        self.status = self.healthcheck()
         if self.status == 'online':
-            self.coins = self.__coinsinfo()
-            self.__converterget()
+            self.coins = self.coinsinfo()
+            self.converterget()
 
 
 
-    def __converterget(self):
+    def converterget(self):
         # Gets the conversion rates for the currency pairs
         time = requests.get('https://api.kraken.com/0/public/Time')
         time = time.json()
@@ -63,7 +67,7 @@ class datacollector:
         fee = self.coins[coin][0]
         return {coin: [asking, bestoffer, fee]}
 
-    def __healthcheck(self):
+    def healthcheck(self):
         # Checks the status of the exchange
         health  = requests.get('https://api.kraken.com/0/public/SystemStatus')
         health = health.json()
@@ -77,7 +81,7 @@ class datacollector:
             print(health)
 
     
-    def __coinsinfo(self):
+    def coinsinfo(self):
         # Gets the fees for the coins
         coinfees = {}
         coins = requests.get('https://api.kraken.com/0/public/AssetPairs?fees&altname')
@@ -88,7 +92,9 @@ class datacollector:
             pair = coins[coin]
             fees = pair['fees']
             fee = fees[0]
+            print(fee)
             altname = pair['altname']
+            print(altname)
             coinfees[altname] = [fee, coin]
         return coinfees
 
@@ -104,10 +110,10 @@ class datacollector:
         self.coinKeys = {}
         self.conversions = {}               #currency pairs are stored here
         self.coinstomake = []                    #prices here
-        self.status = self.__healthcheck()
+        self.status = self.healthcheck()
         if self.status == 'online':
-            self.coins = self.__coinsinfo()
-            self.__converterget()
+            self.coins = self.coinsinfo()
+            self.converterget()
 
 
 

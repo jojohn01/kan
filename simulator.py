@@ -78,8 +78,8 @@ class tradesimulator():
         self.reset()
     
         
-    def filesave(self):
-        record = open('Test_history', 'a')
+    def filesave(self, name = 'Test_history'):
+        record = open(name, 'a')
         record.write(str(self.profit) + '%'+'\n')
         record.close()
 
@@ -91,3 +91,23 @@ class tradesimulator():
         self.sellnumber = 0
 
 
+class arbitrator(tradesimulator):
+
+    def action(self, pairs):
+        coin = pars[0]
+        buy_currency = pars[1]
+        sell_currency = pars[2]
+        price = requests.get('https://api.kraken.com/0/public/Ticker?pair={}'.format(pairs[0]+pairs[1]))
+        price = price.json()
+        price = price['result']
+        price = price['a'][0]
+        sellprice = requests.get('https://api.kraken.com/0/public/Ticker?pair={}'.format(pairs[0]+pairs[2]))
+        sellprice = sellprice.json()
+        sellprice = sellprice['result']
+        sellprice = sellprice['b'][0]
+        profit = (float(price) - float(sellprice))
+        if profit > 0:
+            print('Profit', profit)
+        else:
+            print('Loss', profit)
+        self.filesave('arbitration_history')

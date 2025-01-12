@@ -3,7 +3,7 @@ from simulator import tradesimulator
 
 class coordinator:
 
-    def __init__(self):
+    def __init__(self, exclude = set()):
 
         self.converters = {}
         self.order = ['ETH', 'XBT', 'EUR', 'GBP', 'AUD', 'USD', 'JPY' ]
@@ -12,7 +12,7 @@ class coordinator:
         self.previouscoin = None
         self.coininfo = {}
         self.activesesh = []
-        self.exclude = set()
+        self.exclude = exclude
         self.hitcounter = 0
         self.etherium = 0
         self.bitcoin = 0
@@ -47,7 +47,7 @@ class coordinator:
             currency1 = self.activesesh[i][2]
             comp = i + 1
             for j in range(count):
-                currency2 = self.activesesh[j+comp][2]   
+                currency2 = self.activesesh[j+comp][2]
                 ex_check = currency1+currency2
                 if ex_check not in self.exclude:
                     pair = self.currencycompare(currency1, currency2)
@@ -124,6 +124,10 @@ class converter:
 
 
     def expected(self, price, bottom):
+        checkone = [x for x in price if x]
+        checktwo = [x for x in bottom if x]
+        if not checkone or not checktwo:
+            return [0, None, None, None]
         conv_price = float(price[0]) * float(self.conversion)
         base_sell = float(bottom[1])
         fee = (0.0026 * conv_price) + (0.0026 * base_sell)
@@ -199,3 +203,51 @@ class pricenode:
         return self.pair
 
 
+class Aconverter(converter):
+
+    def expected(self, price, bottom):
+        conv_price = float(price[0]) * float(self.conversion)
+        base_sell = float(bottom[1])
+        fee = (0.0026 * conv_price) + (0.0026 * base_sell)
+        difference = base_sell - conv_price
+        direction = None
+        buy = None
+        if abs(difference) > fee:
+            print('HIT')
+            if difference > 0:
+                direction = self.currency
+                buy = price[0]
+            else:
+                direction = self.currency[3:] + self.currency[:3]
+                buy = bottom[0]
+                base_sell = float(price[1])
+        return [abs(difference) - fee, buy, base_sell, direction]
+
+class Acoordinator(coordinator):
+
+    def __init__(self, exclude = set()):
+        super().__init__(exclude)
+
+
+    def coincompare(self):
+        count = len(self.activesesh)-1
+        for i in range(count):
+            currency1 = self.activesesh[i][2]
+            comp = i + 1
+            for j in range(count):
+                currency2 = self.activesesh[j+comp][2]
+                ex_check = currency1+currency2
+                if ex_check not in self.exclude:
+                    pair = self.currencycompare(currency1, currency2)
+                    converter = self.converters[pair]
+                    if pair[:3] == currency1:              
+                        price = [float(self.activesesh[i][0]), float(self.activesesh[i][1])]
+                        bottom = [float(self.activesesh[j+comp][0]), float(self.activesesh[j+comp][1])]
+                    else:
+                        price = [float(self.activesesh[j+comp][0]), float(self.activesesh[j+comp][1])]
+                        bottom = [float(self.activesesh[i][0]), float(self.activesesh[i][1])]
+                    expected = converter.expected(price, bottom)
+                    if expected[0] > 0:
+                        print(self.previouscoin, str(expected[1])+str(expected[3][:3]), str(expected[2])+str(expected[3][3:]), str(expected[0])+str(expected[3][3:]), ' Profit')
+                        self.simulator.action(self.previouscoin, expected[3][:3], expected[3][3:])
+                        pass
