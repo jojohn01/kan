@@ -82,7 +82,8 @@ class collector:
         alts = []
         for coin in coins:
             alt = coins[coin]['altname']
-            self.coins[alt] = coinpair(alt, coins[coin]['fees'][0][1])
+            self.coins[alt] = coinpair(alt, coins[coin]['fees'][0][1]) # this is where the highest fees are set. That is my current level in the exchange. Planned updates to make fees easier to work with
+
             alts.append(coins[coin]['altname'])
         self.coinKeys = alts
         self.coinKeys.sort(key=coinsortfunc)
@@ -125,7 +126,7 @@ class collector:
         self.groups[current] = pairs
 
 
-    def forwardprofit(self, prices1, prices2, straight_conversions, fee, conversion_fee):
+    def forwardprofit(self, prices1, prices2, straight_conversions, fee, conversion_fee): # modify this function to manually change fees. Planned update shoudl make this better
         price1= prices1[0]
         price4 = prices2[1]
         conversion_buy = straight_conversions[0]

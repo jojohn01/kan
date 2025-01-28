@@ -78,7 +78,6 @@ class infoorganizer:
             if i not in paired and self.atoalts[i] not in paired:
                 print("{} is not paired with anything".format(i))
 
-    def arb
 
 
 test = infoorganizer()

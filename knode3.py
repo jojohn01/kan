@@ -61,8 +61,8 @@ def main():
         coinmaker = worker.coinstomake
         converterlist = worker.convertermakerinfo()
         converternodes = []
-        gj_converter = Aconverter('GBPJPY', 195.11, [0.20, 0.20])
-        ga_converter = Aconverter('GBPAUD', 2.00, [0.20, 0.20])
+        gj_converter = Aconverter('GBPJPY', 193.35, [0.20, 0.20])
+        ga_converter = Aconverter('GBPAUD', 1.99, [0.20, 0.20])
         converternodes.append(gj_converter)
         converternodes.append(ga_converter)
         for info in converterlist:
