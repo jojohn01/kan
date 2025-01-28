@@ -1,6 +1,5 @@
 import requests
 import asyncio
-from knode2 import datacollector
 import time
 
 # This will contain my third generation of objects fr ththe simulator
